@@ -136,7 +136,7 @@ class Shops(object):
         # create the shop_ids list together with its distance
         sids = [ (self.idxs2sids[idx], dist) for idx, dist in zip(idxs, dists) if idx in self.idxs2sids ]
 
-        if tags == None:
+        if not tags or len(tags) == 0:
             return sids
 
         # filter shops out by tags
