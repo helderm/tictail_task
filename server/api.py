@@ -4,26 +4,31 @@ from flask import Blueprint, current_app, jsonify, request
 from werkzeug.exceptions import BadRequest
 from shops import Shops
 
-api = Blueprint('api', __name__)
-
 
 def data_path(filename):
     data_path = current_app.config['DATA_PATH']
     return u"%s/%s" % (data_path, filename)
 
 
+api = Blueprint('api', __name__)
+_shops = None
+
+
 @api.route('/search', methods=['GET'])
 def search():
     args = fetch_and_validate_args()
 
-    shops = Shops().load(data_path)
+    # load shops only once
+    global _shops
+    if _shops == None:
+        _shops = Shops().load(data_path)
 
     # fetch the top products around the area
-    products = shops.top_products(args.lat, args.lon, distance=args.dist/1000.0, tags=args.tags, limit=args.limit)
+    products = _shops.top_products(args.lat, args.lon, distance=args.dist/1000.0, tags=args.tags, limit=args.limit)
 
     # fetch the shop info for all shops in the products list
     shop_ids = set([ product['sid'] for product in products ])
-    shops_in_products = shops.get(shop_ids)
+    shops_in_products = _shops.get(shop_ids)
     return jsonify({'products': products, 'shops': shops_in_products})
 
 
