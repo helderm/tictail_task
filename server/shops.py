@@ -23,7 +23,15 @@ class Shops(object):
         tags_path = data_path('tags.csv')
         taggings_path = data_path('taggings.csv')
 
-        # load shops
+        self.load_shops(shops_path)
+        self.load_products(products_path)
+        self.load_tags(tags_path, taggings_path)
+
+        return self
+
+    def load_shops(self, shops_path):
+        """ load shops file and store into self """
+
         with open(shops_path, 'r') as f:
             for idx, line in enumerate(f):
                 # skip header line
@@ -49,8 +57,11 @@ class Shops(object):
                 self.idxs2sids[idx-1] = sid
 
         self.kdtree = KDTree(self.coords)
+        return self
 
-        # load products
+    def load_products(self, products_path):
+        """ load products file into self """
+
         with open(products_path, 'r') as f:
             for idx, line in enumerate(f):
                 if idx == 0:
@@ -69,11 +80,14 @@ class Shops(object):
                 product = { 'pid': pid, 'quantity': quantity,
                             'name': name }
 
-                # insert products in increasing order of popularity
+                # insert products in decreasing order of popularity
                 shop = self.shops[sid]
                 self._reverse_insort(shop['products'], (popularity, product))
 
-        # load tags
+        return self
+
+    def load_tags(self, tags_path, taggings_path):
+        """ load tags and tagging files into self """
         tags = {}
         with open(tags_path, 'r') as f:
             for idx, line in enumerate(f):
@@ -126,7 +140,7 @@ class Shops(object):
         return res
 
     def nearest(self, lat, lon, limit=100, distance=10, tags=None):
-        """ returns the `num` nearest shop ids at maximum of `distance` km """
+        """ returns the `limit` nearest shop ids at maximum of `distance` km """
         assert(self.kdtree != None)
 
         # query the kdtree for the nearest shops around lat/lon
