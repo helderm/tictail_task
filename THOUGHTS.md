@@ -17,8 +17,7 @@
              (0.6, {'pid': 'pid2', 'name': 'An ok product', 'quantity': 1})]}
 ```
 * Unit tests for the `Shops` can be located at [test_shops.py](https://github.com/helderm/tictail_task/blob/master/tests/test_shops.py) were I heavily used Python's [Mock](https://mock.readthedocs.io/en/latest/) library  
-  * It covers the most important bits of the code. 
-*  Sample calls:
+*  Sample search service calls:
 ```bash
 curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499"
 curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499&limit=5"
