@@ -54,7 +54,7 @@ class TestShops(object):
         pass
 
     def test_nearest(self):
-        """ test nearest shops """
+        """ test nearest() method """
 
         # load test obj
         shops = Shops()
@@ -67,6 +67,7 @@ class TestShops(object):
         with patch('server.shops.open', m, create=True):
             shops.load_shops('/anypath')
 
+
         # test distance
         nearby = shops.nearest(59.33344130421325, 18.06072430751509, distance=0.001)
         assert(len(nearby) == 1 and nearby[0][0] == shop1['sid'])
@@ -74,6 +75,8 @@ class TestShops(object):
         assert(len(nearby) == 2 and nearby[1][0] == shop2['sid'])
         nearby = shops.nearest(59.33344130421325, 18.06072430751509, distance=40)
         assert(len(nearby) == 3 and nearby[2][0] == shop3['sid'])
+        nearby = shops.nearest(10.0, 10.0, distance=1)
+        assert(len(nearby) == 0)
 
         # test tags
         tag_file_data, taggings_file_data = self._tags_taggings_file_data([shop1, shop2, shop3])
@@ -90,7 +93,17 @@ class TestShops(object):
         assert(len(nearby) == 1)
         assert('tag3' in shops.shops[nearby[0][0]]['tags'])
 
+        # test invalid ranges for coords
+        with pyt.raises(AssertionError):
+            nearby = shops.nearest(100.0, 10.0, distance=1)
+        with pyt.raises(AssertionError):
+            nearby = shops.nearest(0.0, 200.0, distance=1)
+        with pyt.raises(AssertionError):
+            nearby = shops.nearest(0.0, 0.0, distance=-10)
+
+
     def test_top_products(self):
+        """ test top_products() method """
 
         # load test obj
         shops = Shops()
@@ -128,6 +141,8 @@ class TestShops(object):
             assert(len(top_prods) == 2)
             assert(top_prods[0]['pid'] == prods1[0][1]['pid'])
             assert(top_prods[1]['pid'] == prods2[0][1]['pid'])
+            with pyt.raises(AssertionError):
+                top_prods = shops.top_products(0.0, 0.0, distance=10, limit=-2)
 
     def _mock_open(self, file_datas):
         """ workaround for mock_open not working with iterators (http://bugs.python.org/issue21258) """

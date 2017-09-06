@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
+""" Shops """
 
 from scipy.spatial import KDTree
 import numpy as np
 from copy import copy
 
 class Shops(object):
+    """ A class to store all known shops alongside its products
 
+    load() method read all csv files and stores the data into memory
+    nearest() returns the nearest shops around an area (optinally filtered by tags)
+    top_products() returns an ordered list of the most popular products in an area
+    get() returns detailed info of shops from the requested shop ids
+
+    """
     def __init__(self):
         self.shops = {}
         self.idxs2sids = {}
@@ -142,6 +150,9 @@ class Shops(object):
     def nearest(self, lat, lon, limit=100, distance=10, tags=None):
         """ returns the `limit` nearest shop ids at maximum of `distance` km """
         assert(self.kdtree != None)
+        assert(lat >= -90.0 and lat <= 90.0)
+        assert(lon >= -180.0 and lon <= 180.0)
+        assert(distance >= 0)
 
         # query the kdtree for the nearest shops around lat/lon
         dists, idxs = self.kdtree.query(self._to_cartesian(lat, lon), k=limit,
@@ -161,6 +172,7 @@ class Shops(object):
 
     def top_products(self, lat, lon, distance, limit=0, tags=None):
         """ returns a list of the most popular products from shops aroud the area """
+        assert(limit >= 0)
 
         # fetch the nearest shops
         shops_nearby = self.nearest(lat, lon, distance=distance, tags=tags)
