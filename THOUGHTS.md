@@ -22,7 +22,7 @@
 ```bash
 curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499"
 curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499&limit=5"
-curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499&distance=10"
+curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499&dist=1"
 curl "localhost:5000/search?lat=59.33265972650577&lon=18.06061237898499&tag=cool&tag=men"
 ```
   
